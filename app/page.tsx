@@ -1,8 +1,28 @@
 // app/page.tsx
+'use client'
 import Image from 'next/image'
 import NavBar from './components/NavBar'
+import { useState, useEffect } from 'react'
+import Link from 'next/link'
+
+type Entry = {
+  name: string
+  email: string
+  comment: string
+  topic: string
+}
 
 export default function HomePage() {
+
+     const [entries, setEntries] = useState<Entry[]>([])
+
+  useEffect(() => {
+    const stored = localStorage.getItem('userInfo')
+    if (stored) {
+      setEntries(JSON.parse(stored))
+    }
+  }, [])
+
   return (
     <>
       <NavBar />
@@ -54,6 +74,30 @@ export default function HomePage() {
             Subscribe
           </button>
         </form>
+      </section>
+      
+
+      <section className="p-6 max-w-4xl mx-auto">
+        <h1 className="text-3xl font-bold mb-4">Welcome to Your Adventure</h1>
+        <p className="mb-6">Click 'Info' in the navbar to submit your thoughts.</p>
+
+        <h2 className="text-2xl font-semibold mb-2">Submitted Info:</h2>
+        {entries.length === 0 ? (
+          <p className="text-gray-500">No submissions yet.</p>
+        ) : (
+          <ul className="space-y-2">
+            {entries.map((entry, index) => (
+              <li key={index}>
+                <Link 
+                  href={`/info/${entry.topic}/${index}`} 
+                  className="text-blue-600 hover:underline"
+                >
+                  {entry.name} ({entry.email})
+                </Link>
+              </li>
+            ))}
+          </ul>
+        )}
       </section>
 
       {/* Footer */}
